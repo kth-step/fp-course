@@ -1,0 +1,112 @@
+embed 
+{{ coq
+Require Export Ascii.
+Require Export String.
+
+Hint Resolve ascii_dec : ott_coq_equality.
+}}
+metavar n ::=
+	{{ lex numeral }}
+	{{ coq nat }}
+	{{ coq-equality }}
+	{{ com number }}
+metavar x ::=
+      {{ lex alphanum }}
+      {{ coq string }}
+      {{ coq-equality }}
+      {{ com variable }}
+grammar
+e :: e_ ::=
+  | x :: :: var {{ com variable }}
+  | n :: :: num {{ com number }}
+  | e + e' :: :: plus {{ com plus }}
+  | e * e' :: :: times {{ com times }}
+  | let x := e in e' :: :: def (+ bind x in e' +)
+    {{ com let }}
+  | e [ e' / x ] :: M :: subst
+    {{ com substitution }} 
+    {{ coq (subst_e [[e']] [[x]] [[e]]) }}    
+  | ( e ) :: S :: parentheses
+    {{ coq ([[e]]) }}
+
+terminals :: terminals_ ::=
+	  | -> :: :: red
+	    {{ tex \rightarrow }}
+	  | \||/ :: :: down
+	    {{ tex \Downarrow }}
+
+formula :: formula_ ::= 
+  {{ com formulas }}
+  | judgement :: :: judgement
+  | n + n' = n'' :: M :: num_plus_eq
+    {{ coq ([[n]] + [[n']] = [[n'']]) }}
+  | n * n' = n'' :: M :: num_times_eq
+    {{ coq ([[n]] * [[n']] = [[n'']]) }}
+
+substitutions
+  single e x :: subst
+
+%freevars
+%  e x :: free
+
+defns
+  operational_semantics :: os_ ::=   
+  
+defn
+  e -> e' :: :: red :: red_
+  {{ com reduction step }} by
+
+  n1 + n2 = n
+  ------------ :: plus
+  n1 + n2 -> n
+
+  e1 -> e'1
+  ------------------- :: plus_l
+  e1 + e2 -> e'1 + e2  
+
+  e -> e'
+  --------------- :: plus_r
+  n + e -> n + e'
+
+  n1 * n2 = n
+  ------------ :: times
+  n1 * n2 -> n
+
+  e1 -> e'1
+  ------------------- :: times_l
+  e1 * e2 -> e'1 * e2  
+
+  e -> e'
+  --------------- :: times_r
+  n * e -> n * e'
+
+  e1 -> e'1
+  --------------------------------------- :: let
+  let x := e1 in e2 -> let x := e'1 in e2
+
+  -------------------------------- :: bind
+  let x := n in e2 -> e2 [ n / x ]
+
+defn
+  e \||/ n :: :: eval :: eval_
+  {{ com evaluates to }} by
+
+  -------- :: num
+  n \||/ n
+
+  e1 \||/ n1
+  e2 \||/ n2
+  n1 + n2 = n
+  -------------- :: plus
+  e1 + e2 \||/ n
+
+  e1 \||/ n1
+  e2 \||/ n2
+  n1 * n2 = n
+  -------------- :: times
+  e1 * e2 \||/ n
+
+  e1 \||/ n1
+  e2 [ n1 / x ] \||/ n2
+  ------------------------- :: let
+  let x := e1 in e2 \||/ n2

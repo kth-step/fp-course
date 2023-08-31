@@ -1,0 +1,130 @@
+% all
+metavar termvar, x, y ::=   {{ com  term variable }} 
+{{ isa string}} {{ coq nat}} {{ hol string}} {{ coq-equality }}
+{{ ocaml int}} {{ lex alphanum}} {{ tex \mathit{[[termvar]]} }}
+
+grammar
+t :: 't_' ::=                               {{ com term    }}
+  | x            ::  :: Var                   {{ com variable}}
+  | \ x . t      ::  :: Lam (+ bind x in t +) {{ com lambda  }}
+  | t t'         ::  :: App                   {{ com app     }}
+  | ( t )        :: S:: Paren                 {{ icho [[t]]  }} 
+  | [ t / x ] t' :: M:: Tsub  
+                        {{ icho (tsubst_t [[t]] [[x]] [[t']])}}
+
+v :: 'v_' ::=                               {{ com value   }}
+  | \ x . t      ::  :: Lam                   {{ com lambda  }}
+
+terminals :: 'terminals_' ::=
+  | \            ::  :: lambda  {{ tex \lambda }}
+  | -->          ::  :: red     {{ tex \longrightarrow }}
+  | in           ::  :: in      {{ tex \in }}
+  | <>           ::  :: neq      {{ tex \neq }}
+  | =a           ::  :: eqa      {{ tex \equiv_\alpha }}
+  | =b           ::  :: eqb      {{ tex \equiv_\beta }}
+  | FV           ::  :: FV      {{ tex \mathrm{FV} }}
+  | notin            ::  :: notin {{ tex \notin }}
+
+formula :: formula_ ::= 
+  {{ com formulas }}
+  | judgement :: :: judgement
+  | x <> x' :: M :: var_neq
+  | x notin FV(t) :: M :: notin_fv
+
+subrules
+  v <:: t
+
+substitutions
+  single t x :: tsubst 
+
+defns
+Jop :: '' ::=
+
+ defn
+ t1 --> t2 :: ::reduce::'' {{ com $[[t1]]$ reduces to $[[t2]]$}} by
+
+
+    --------------------------  :: ax_app
+    (\x.t12) v2 -->  [v2/x]t12
+
+    t1 --> t1'
+    -------------- :: ctx_app_fun
+    t1 t --> t1' t
+
+    t1 --> t1'
+    -------------- :: ctx_app_arg
+    v t1 --> v t1'
+
+ defn
+ x in FV ( t ) :: :: fv ::'' {{ com free variable }} by
+ 
+ ---------- :: var
+ x in FV(x)
+
+ x in FV(t1)
+ -------------- :: app_l
+ x in FV(t1 t2)
+
+ x in FV(t2)
+ -------------- :: app_r
+ x in FV(t1 t2)
+
+ x in FV(t)
+ x <> y
+ ------------- :: lam
+ x in FV(\y.t)
+ 
+ defn
+ t =a t' :: :: aeq :: aeq_ {{ com alpha equivalence }} by
+
+ ------ :: id
+ t =a t
+
+ t =a t'
+ ------- :: sym
+ t' =a t
+
+ t =a t'
+ t' =a t''
+ --------- :: trans
+ t =a t''
+
+ t1 =a t1'
+ t2 =a t2'
+ ---------------- :: app
+ t1 t2 =a t1' t2'
+
+ t =a t'
+ ------------- :: lam
+ \x.t =a \x.t'
+
+ x' notin FV(t)
+ ------------------- :: subst
+ \x.t =a \x'.[x'/x]t
+
+ defn
+ t =b t' :: :: beq :: beq_ {{ com beta equivalence }} by
+
+ ------ :: id
+ t =b t
+
+ t =b t'
+ ------- :: sym
+ t' =b t
+
+ t =b t'
+ t' =b t''
+ --------- :: trans
+ t =b t''
+
+ t1 =b t1'
+ t2 =b t2'
+ --------- :: app
+ t1 t2 =b t1' t2'
+
+ t =b t'
+ ------------- :: lam
+ \x.t =b \x.t'
+
+ --------------------- :: subst
+ (\x.t) t' =b [t'/x] t
