@@ -1,7 +1,7 @@
-% all
-metavar termvar, x, y ::=   {{ com  term variable }} 
-{{ isa string}} {{ coq nat}} {{ hol string}} {{ coq-equality }}
-{{ ocaml int}} {{ lex alphanum}} {{ tex \mathit{[[termvar]]} }}
+metavar termvar, x, y ::=
+ {{ com  term variable }}
+ {{ coq nat}} {{ hol string}} {{ coq-equality }}
+ {{ lex alphanum}} {{ tex \mathit{[[termvar]]} }}
 
 grammar
 t :: 't_' ::=                               {{ com term    }}
@@ -10,7 +10,8 @@ t :: 't_' ::=                               {{ com term    }}
   | t t'         ::  :: App                   {{ com app     }}
   | ( t )        :: S:: Paren                 {{ icho [[t]]  }} 
   | [ t / x ] t' :: M:: Tsub  
-                        {{ icho (tsubst_t [[t]] [[x]] [[t']])}}
+    {{ coq (tsubst_t [[t]] [[x]] [[t']])}}
+    {{ hol (tsubst_t [[t]] [[x]] [[t']])}}
 
 v :: 'v_' ::=                               {{ com value   }}
   | \ x . t      ::  :: Lam                   {{ com lambda  }}
@@ -20,8 +21,8 @@ terminals :: 'terminals_' ::=
   | -->          ::  :: red     {{ tex \longrightarrow }}
   | in           ::  :: in      {{ tex \in }}
   | <>           ::  :: neq      {{ tex \neq }}
-  | =a           ::  :: eqa      {{ tex \equiv_\alpha }}
-  | =b           ::  :: eqb      {{ tex \equiv_\beta }}
+  | =a           ::  :: aeq      {{ tex \equiv_\alpha }}
+  | =b           ::  :: beq      {{ tex \equiv_\beta }}
   | FV           ::  :: FV      {{ tex \mathrm{FV} }}
   | notin            ::  :: notin {{ tex \notin }}
 
@@ -29,7 +30,11 @@ formula :: formula_ ::=
   {{ com formulas }}
   | judgement :: :: judgement
   | x <> x' :: M :: var_neq
-  | x notin FV(t) :: M :: notin_fv
+    {{ coq ([[x]] <> [[x']]) }}
+    {{ hol ([[x]] <> [[x']]) }}
+  | x notin FV ( t ) :: M :: notin_fv
+    {{ coq (~ fv [[x]] [[t]]) }}
+    {{ hol (~ fv [[x]] [[t]]) }}
 
 subrules
   v <:: t
@@ -38,25 +43,27 @@ substitutions
   single t x :: tsubst 
 
 defns
-Jop :: '' ::=
+red :: '' ::=
 
  defn
- t1 --> t2 :: ::reduce::'' {{ com $[[t1]]$ reduces to $[[t2]]$}} by
+ t1 --> t2 :: :: reduce :: red_ {{ com $[[t1]]$ reduces to $[[t2]]$}} by
 
+ -------------------------  :: ax_app
+ (\x.t12) v2 --> [v2/x]t12
 
-    --------------------------  :: ax_app
-    (\x.t12) v2 -->  [v2/x]t12
+ t1 --> t1'
+ -------------- :: ctx_app_fun
+ t1 t --> t1' t
 
-    t1 --> t1'
-    -------------- :: ctx_app_fun
-    t1 t --> t1' t
+ t1 --> t1'
+ -------------- :: ctx_app_arg
+ v t1 --> v t1'
 
-    t1 --> t1'
-    -------------- :: ctx_app_arg
-    v t1 --> v t1'
+defns
+fv :: '' ::=
 
  defn
- x in FV ( t ) :: :: fv ::'' {{ com free variable }} by
+ x in FV ( t ) :: :: fv :: fv_ {{ com free variable }} by
  
  ---------- :: var
  x in FV(x)
@@ -73,6 +80,9 @@ Jop :: '' ::=
  x <> y
  ------------- :: lam
  x in FV(\y.t)
+
+defns
+aeq :: '' ::=
  
  defn
  t =a t' :: :: aeq :: aeq_ {{ com alpha equivalence }} by
@@ -101,6 +111,9 @@ Jop :: '' ::=
  x' notin FV(t)
  ------------------- :: subst
  \x.t =a \x'.[x'/x]t
+
+defns
+beq :: '' ::=
 
  defn
  t =b t' :: :: beq :: beq_ {{ com beta equivalence }} by
