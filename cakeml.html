@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>coq-community</title>
+  <title>CakeML</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -83,26 +83,25 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">coq-community</h1>
+<h1 class="title">CakeML</h1>
 </header>
-<h1 id="cakeml-instructions">CakeML instructions</h1>
+<h2 id="cakeml-mac-instructions">CakeML Mac instructions</h2>
 <p>Here are the full instructions to get a native ARM executable of a CakeML “Hello World!” program on Apple Silicon (M1 Pro):</p>
-<h2 id="setup">Setup</h2>
+<h3 id="setup">Setup</h3>
 <p>Download an <code>x86-64</code> <a href="https://github.com/CakeML/cakeml/releases">CakeML release</a>.</p>
 <p>On <code>x86-64</code> (or using <a href="https://support.apple.com/en-gb/guide/security/secebb113be1/web">Rosetta 2</a>, e.g. via <code>arch -x86_64 /bin/zsh</code>):</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># Link cake.S against basis library and produce executable ./cake</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">make</span> cake</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="co"># Cross compile the compiler for arm8</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="bu">time</span> env CML_HEAP_SIZE=4096 CML_STACK_SIZE=4096 <span class="kw">\</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>  <span class="ex">./cake</span> --target=arm8 --sexp=true --jump=false <span class="kw">\</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>    <span class="ex">--skip_type_inference</span>=true --exclude_prelude=true <span class="kw">\</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>     <span class="op">&lt;</span> <span class="ex">cake-sexpr-64</span> <span class="op">&gt;</span> cake-arm8.S</span></code></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="bu">time</span> env CML_HEAP_SIZE=4096 CML_STACK_SIZE=4096 <span class="kw">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>  <span class="ex">./cake</span> --target=arm8 --sexp=true --jump=false <span class="kw">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>    <span class="ex">--skip_type_inference</span>=true --exclude_prelude=true <span class="kw">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>     <span class="op">&lt;</span> <span class="ex">cake-sexpr-64</span> <span class="op">&gt;</span> cake-arm8.S</span></code></pre></div>
 <p>On <code>arm8</code> with some C compiler:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Link cake-arm8.S against basis library and produce executable</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="fu">clang</span> cake-arm8.S basis_ffi.c -o cake-arm8</span></code></pre></div>
-<h2 id="usage">Usage</h2>
+<h3 id="usage">Usage</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ex">./cake-arm8</span> --target=arm8 <span class="op">&lt;</span> hello.cml <span class="op">&gt;</span> hello.S</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="co"># Link hello.S against basis library and produce executable</span></span>
