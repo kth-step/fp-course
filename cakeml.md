@@ -49,4 +49,4 @@ clang hello.S basis_ffi.c -o hello.cake
 ./hello.cake # Hello, World!
 ```
 
-The `--target=arm8` argument is still necessary, [since the CakeML compiler defaults to an `x86` target](https://github.com/CakeML/cakeml/blob/a500b998760b855e6d32428c2e39ce0f69a89131/compiler/compile
+The `--target=arm8` argument is still necessary, [since the CakeML compiler defaults to an `x86` target](https://github.com/CakeML/cakeml/blob/a500b998760b855e6d32428c2e39ce0f69a89131/compiler/compile)
