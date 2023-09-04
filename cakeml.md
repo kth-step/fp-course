@@ -1,5 +1,5 @@
 ---
-title: CakeML
+title: CakeML instructions
 lang: en
 header-includes:
   - |
