@@ -1,0 +1,15 @@
+metavar i ::=
+ {{ lex num }}
+indexvar n ::=
+ {{ lex num }}
+grammar
+T :: T_ ::=
+| i1 ~> T1 * ... * in ~> Tn  :: :: prod
+
+e :: e_ ::=
+| < i1 ~> e1 , ... , in ~> en > :: :: tpl
+| pr [ i ] ( e ) :: :: proj
+
+terminals :: terminals_ ::=
+| pr :: :: pr {{ tex \mathsf{pr} }}
+| ~> :: :: sqar {{ tex \leadsto }}

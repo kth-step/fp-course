@@ -1,0 +1,16 @@
+grammar
+T :: T_ ::=
+| unit :: :: unit
+| prod ( T1 , T2 ) :: :: prod
+
+e :: e_ ::=
+| triv :: :: triv
+| pair ( e1 , e2 ) :: :: pair
+| pr [ l ] ( e ) :: :: left_proj
+| pr [ r ] ( e ) :: :: right_proj
+
+terminals :: terminals_ ::=
+| unit :: :: unit {{ tex \mathsf{unit} }}
+| prod :: :: prod {{ tex \mathsf{prod} }}
+| pr :: :: pr {{ tex \mathsf{pr} }}
+| pair :: :: pair {{ tex \mathsf{pair} }}
