@@ -1,0 +1,58 @@
+module Rev
+
+ use list.List
+ use list.Append
+
+  let rec function reverse (l : list 'a) : list 'a
+   variant { l }
+  =
+   match l with
+   | Nil -> Nil
+   | Cons a l0 -> reverse l0 ++ Cons a Nil
+   end
+
+  let rec function rev_aux (l1 l2: list 'a) : list 'a
+   variant { l1 }
+   =
+    match l1 with
+    | Nil -> l2
+    | Cons a l11 -> rev_aux l11 (Cons a l2)
+    end
+
+  let rec function rev (l : list 'a) : list 'a
+   variant { l }
+   ensures { result = reverse l }
+   =
+   rev_aux l Nil
+
+  (* reverse *)
+
+  lemma reverse_append:
+    forall l1 l2: list 'a, x: 'a.
+    (reverse (Cons x l1)) ++ l2 = (reverse l1) ++ (Cons x l2)
+
+  lemma reverse_cons:
+    forall l: list 'a, x: 'a.
+    reverse (Cons x l) = reverse l ++ Cons x Nil
+
+  lemma cons_reverse:
+    forall l : list 'a, x: 'a.
+     Cons x (reverse l) = reverse (l ++ Cons x Nil)
+
+  lemma reverse_reverse:
+    forall l: list 'a. reverse (reverse l) = l
+
+  (* rev_aux *)
+
+  lemma rev_aux_append_append_l:
+    forall r [@induction] s t: list 'a.
+      rev_aux (r ++ s) t = rev_aux s (rev_aux r t)
+
+  lemma rev_aux_append_r:
+    forall r s t: list 'a.
+      rev_aux r (s ++ t) = rev_aux (rev_aux s r) t
+
+  lemma rev_aux_append:
+    forall r [@induction] s: list 'a. reverse r ++ s = rev_aux r s
+
+end
