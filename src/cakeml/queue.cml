@@ -1,0 +1,58 @@
+(*
+Queue abstract type in CakeML
+
+Tested with release v2184:
+https://github.com/CakeML/cakeml/releases/tag/v2184
+
+To see type signatures:
+$ ./cake --types < queue.cml
+
+To compile and run:
+$ make queue.cake
+$ ./queue.cake
+*)
+
+structure AbsQ = struct
+ local (* hide implementation *) 
+
+  datatype 'a q = QUEUE ('a list) ('a list);
+
+  val q_empty = QUEUE [] [];
+
+  fun q_is_empty q =
+   case q of
+     QUEUE [] xs => True
+   | _ => False;
+
+  fun reverse_aux l acc =
+    case l of
+      [] => acc
+    | x::xs => (reverse_aux xs (x::acc));
+
+  fun reverse xs = reverse_aux xs [];
+
+  fun checkf q =
+   case q of
+      QUEUE [] xs => (QUEUE(reverse xs) [])
+    | _ => q;
+
+  fun q_snoc q x = case q of
+   QUEUE f r => (checkf (QUEUE f (x::r)));
+
+  fun q_head q = case q of
+   QUEUE (x::_) _ => x;
+
+  fun q_tail q = case q of
+   QUEUE (_::f) r => (checkf (QUEUE f r));
+
+  in (* expose only abstract type and operations *)
+    type 'a queue = 'a q;
+    val empty = q_empty;
+    val snoc = q_snoc;
+    val head = q_head;
+    val tail = q_tail;
+  end;
+end;
+
+print (AbsQ.head (AbsQ.snoc AbsQ.empty "first"));
+print "\n";

@@ -1,0 +1,23 @@
+module Gcd
+
+  use int.Int
+
+  predicate divides (n m : int) =
+   exists k. n * k = m
+
+  let rec gcd (a b : int) : int
+    requires { 0 <= a && 0 <= b }
+    ensures  {
+     (0 < a && 0 < b) -> 
+       (divides result a && divides result b &&
+	(forall k. (divides k a && divides k b) -> k <= result))
+    }
+    variant { a + b }
+  =
+  if a = 0 then 0
+  else if b = 0 then 0
+  else if a = b then a
+  else if a < b then gcd a (b-a)
+  else gcd (a-b) a
+
+end
